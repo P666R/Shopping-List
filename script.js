@@ -58,14 +58,25 @@ function clearItems() {
 }
 
 function checkUI() {
-  const hasItems = itemList.children.length;
+  const hasItems = itemList.firstElementChild;
   clearBtn.style.display = hasItems ? 'block' : 'none';
   itemFilter.style.display = hasItems ? 'block' : 'none';
+}
+
+function filterItems(e) {
+  const items = itemList.querySelectorAll('li');
+  const text = e.target.value.toLowerCase();
+
+  items.forEach((item) => {
+    const itemName = item.firstChild.textContent.toLowerCase().trim();
+    item.style.display = itemName.includes(text) ? 'flex' : 'none';
+  });
 }
 
 // Event listeners
 itemForm.addEventListener('submit', addItem);
 itemList.addEventListener('click', removeItem);
 clearBtn.addEventListener('click', clearItems);
+itemFilter.addEventListener('input', filterItems);
 
 checkUI();
