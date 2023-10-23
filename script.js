@@ -29,21 +29,28 @@ function createIcon(...classes) {
   return icon;
 }
 
-// add item on submit
 function onAddItemSubmit(e) {
   e.preventDefault();
   const newItem = itemInput.value;
+
   if (!newItem) {
     return alert('Please add an item');
   }
 
   if (isEditMode) {
     const itemToEdit = itemList.querySelector('.edit-mode');
+    itemToEdit.classList.remove('edit-mode');
+
+    if (checkIfItemExists(newItem)) {
+      alert('That item already exists');
+      return checkUI();
+    }
 
     removeItemFromStorage(itemToEdit.textContent);
-    itemToEdit.classList.remove('edit-mode');
     itemToEdit.remove();
     isEditMode = false;
+  } else if (checkIfItemExists(newItem)) {
+    return alert('That item already exists');
   }
 
   addItemToDom(newItem);
@@ -56,23 +63,29 @@ function onAddItemSubmit(e) {
 function addItemToDom(item) {
   const li = document.createElement('li');
   li.appendChild(document.createTextNode(item));
+
   const button = createButton('remove-item', 'btn-link', 'text-red');
   li.appendChild(button);
+
   const icon = createIcon('fa-solid', 'fa-xmark');
   button.appendChild(icon);
+
   itemList.appendChild(li);
 }
 
 // add item to storage
 function addItemToStorage(item) {
   const itemsFromStorage = getItemsFromStorage();
+
   itemsFromStorage.push(item);
+
   localStorage.setItem('items', JSON.stringify(itemsFromStorage));
 }
 
 // get items from storage
 function getItemsFromStorage() {
   const itemsFromStorage = localStorage.getItem('items');
+
   return itemsFromStorage === null ? [] : JSON.parse(itemsFromStorage);
 }
 
@@ -82,7 +95,9 @@ function setItemToEdit(item) {
   itemList
     .querySelectorAll('li')
     .forEach((el) => el.classList.remove('edit-mode'));
+
   item.classList.add('edit-mode');
+
   formbtn.innerHTML = '<i class="fa-solid fa-pen"></i> Update item';
   formbtn.style.backgroundColor = '#228b22';
 
@@ -99,6 +114,14 @@ function onClickItem(e) {
   }
 }
 
+// check for duplicate item
+function checkIfItemExists(item) {
+  const itemsFromStorage = getItemsFromStorage();
+  const lowerCaseItem = item.toLowerCase();
+
+  return itemsFromStorage.some((item) => item.toLowerCase() === lowerCaseItem);
+}
+
 // remove item from dom
 function removeItem(item) {
   if (confirm('Are you sure ?')) {
@@ -111,6 +134,7 @@ function removeItem(item) {
 // remove item from storage
 function removeItemFromStorage(item) {
   const updatedItems = getItemsFromStorage().filter((el) => el !== item);
+
   localStorage.setItem('items', JSON.stringify(updatedItems));
 }
 
@@ -119,6 +143,7 @@ function clearItems() {
   while (itemList.firstChild) {
     itemList.firstChild.remove();
   }
+
   localStorage.removeItem('items');
   checkUI();
 }
