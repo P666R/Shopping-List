@@ -36,6 +36,16 @@ function onAddItemSubmit(e) {
   if (!newItem) {
     return alert('Please add an item');
   }
+
+  if (isEditMode) {
+    const itemToEdit = itemList.querySelector('.edit-mode');
+
+    removeItemFromStorage(itemToEdit.textContent);
+    itemToEdit.classList.remove('edit-mode');
+    itemToEdit.remove();
+    isEditMode = false;
+  }
+
   addItemToDom(newItem);
   addItemToStorage(newItem);
   itemInput.value = '';
@@ -73,7 +83,7 @@ function setItemToEdit(item) {
     .querySelectorAll('li')
     .forEach((el) => el.classList.remove('edit-mode'));
   item.classList.add('edit-mode');
-  formbtn.innerHTML = '<i class="fa-solid fa-pen"></i>&nbsp &nbspUpdate item';
+  formbtn.innerHTML = '<i class="fa-solid fa-pen"></i> Update item';
   formbtn.style.backgroundColor = '#228b22';
 
   itemInput.value = item.textContent;
@@ -115,9 +125,15 @@ function clearItems() {
 
 // if no items clear filter and clearall btn
 function checkUI() {
+  itemInput.value = '';
+
   const hasItems = itemList.firstElementChild;
   clearBtn.style.display = hasItems ? 'block' : 'none';
   itemFilter.style.display = hasItems ? 'block' : 'none';
+
+  formbtn.innerHTML = '<i class="fa-solid fa-plus"></i> Add Item';
+  formbtn.style.backgroundColor = '#333';
+  isEditMode = false;
 }
 
 // filter items
