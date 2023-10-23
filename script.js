@@ -3,6 +3,8 @@ const itemInput = document.getElementById('item-input');
 const itemList = document.getElementById('item-list');
 const itemFilter = document.getElementById('filter');
 const clearBtn = document.getElementById('clear');
+const formbtn = itemForm.querySelector('button');
+let isEditMode = false;
 
 // retrieve items from localstorage and display
 function displayItems() {
@@ -64,10 +66,26 @@ function getItemsFromStorage() {
   return itemsFromStorage === null ? [] : JSON.parse(itemsFromStorage);
 }
 
+// set item to edit
+function setItemToEdit(item) {
+  isEditMode = true;
+  itemList
+    .querySelectorAll('li')
+    .forEach((el) => el.classList.remove('edit-mode'));
+  item.classList.add('edit-mode');
+  formbtn.innerHTML = '<i class="fa-solid fa-pen"></i>&nbsp &nbspUpdate item';
+  formbtn.style.backgroundColor = '#228b22';
+
+  itemInput.value = item.textContent;
+  itemInput.focus();
+}
+
 // get the target item
 function onClickItem(e) {
   if (e.target.parentElement.classList.contains('remove-item')) {
     removeItem(e.target.parentElement.parentElement);
+  } else if (e.target.tagName === 'LI') {
+    setItemToEdit(e.target);
   }
 }
 
